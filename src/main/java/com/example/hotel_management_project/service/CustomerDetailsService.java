@@ -42,6 +42,20 @@ public class CustomerDetailsService {
 	
 	public CustomerDetailsEntity saveDetails(CustomerDetails customerDetails) {
 		
+		CustomerDetailsValidations(customerDetails);
+		
+        CustomerDetailsEntity entity = new CustomerDetailsEntity();
+        entity.setCustomerName(customerDetails.getCustomerName());
+        entity.setAge(customerDetails.getAge());
+        entity.setAddress(customerDetails.getAddress());
+        entity.setCountryCode(customerDetails.getCountryCode());
+        entity.setIdProof(customerDetails.getIdProof());
+        entity.setMobileNumber(customerDetails.getMobileNumber());
+     
+        return customerRepository.save(entity);
+    }
+
+	private void CustomerDetailsValidations(CustomerDetails customerDetails) {
 		if(customerDetails.getCustomerName() == null || customerDetails.getCustomerName().isEmpty() && customerDetails.getCustomerName().length() >= 10) {
 			throw new ValidationException("Customer Name cannot be null or empty and less than 10 charcters ");
 		}
@@ -69,17 +83,7 @@ public class CustomerDetailsService {
 		if(customerRepository.existsByMobileNumber(customerDetails.getMobileNumber())) {
 			throw new ValidationException("Mobile number already exists");
 		}
-		
-        CustomerDetailsEntity entity = new CustomerDetailsEntity();
-        entity.setCustomerName(customerDetails.getCustomerName());
-        entity.setAge(customerDetails.getAge());
-        entity.setAddress(customerDetails.getAddress());
-        entity.setCountryCode(customerDetails.getCountryCode());
-        entity.setIdProof(customerDetails.getIdProof());
-        entity.setMobileNumber(customerDetails.getMobileNumber());
-     
-        return customerRepository.save(entity);
-    }
+	}
 	
 	public CustomerDetailsEntity updateDetails(Long id, CustomerDetails custDetails) {
 		
