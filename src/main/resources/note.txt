@@ -1,0 +1,37 @@
+<!----Spring Security---
+
+-> For Spring Security, Need to add the below dependency
+
+ 				<dependency>
+        			<groupId>org.springframework.boot</groupId>
+        			<artifactId>spring-boot-starter-security</artifactId>
+    			</dependency>
+    			
+-> then again run the command : mvn clean install
+
+-> now by default we can access a login page with the url: http//localhost:8080/login
+-> default user name : user & password will generate and shown in console automatically when the application is running 
+
+-> can change the username and password for the default login page, for that
+-> set the application.properties as follows
+
+	spring.security.user.name=Balu
+	spring.security.user.password=balu
+	
+-> rerun the application and can access the login page with the credentials.
+
+-> check with postman tool by adding the credentials in Authentication/BasicAuth.
+
+<!--CSRF token generation--->
+
+-> Basically Post,Put & Delete will not work with basicAuth, They need a csrf token to be passed.
+-> to create a csrf a function should implement and should pass in Headers(postman)
+
+		@GetMapping("/csrf-token")
+		public CsrfToken getCsrfToken(HttpServletRequest request) {
+			return (CsrfToken) request.getAttribute("_csrf");
+		}
+-> this will create a token that should be passed under Headers key value pair: key: X-CSRF-TOKEN token: will generate
+
+
+		

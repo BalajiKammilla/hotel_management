@@ -7,10 +7,11 @@ CREATE TABLE customer_details (
     customerName VARCHAR(255) NOT NULL,
     age INT NOT NULL,
     mobileNumber VARCHAR(15) NOT NULL,
+    password VARCHAR(255) NOT NULL,
     countryCode VARCHAR(5) NOT NULL,
     address VARCHAR(255) NOT NULL,
     idProof VARCHAR(50) NOT NULL,
-    maritalStatus VARCHAR(20) NOT NULL
+    maritalStatus VARCHAR(20)
 );
 
 CREATE TABLE room_details (
@@ -32,9 +33,9 @@ CREATE TABLE payment_details (
     payment_status VARCHAR(50) NOT NULL
 );
 
-INSERT INTO customer_details (customerName, age, mobileNumber, countryCode, address, idProof, maritalStatus)
+INSERT INTO customer_details (customerName, age, mobileNumber, password, countryCode, address, idProof, maritalStatus)
 VALUES 
-    ('John Doe', 30, '1234567890', 'IN', '123 Main St, City', 'Aadhar123', 'MARRIED');
+    ('John Doe', 30, '1234567890', '$2a$12$dS2C9SD1jAzVLQNABmefpeGgVvLEt3BBjGTjCWplakL/UwsS3y.2.', 'IN', '123 Main St, City', 'Aadhar123', 'MARRIED');
 
 INSERT INTO room_details (roomNo, roomType, roomStatus, price, checkInType, idProofType, checkoutTime)
 VALUES

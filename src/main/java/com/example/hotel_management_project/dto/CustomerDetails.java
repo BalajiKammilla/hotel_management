@@ -7,6 +7,7 @@ public class CustomerDetails {
 	private String customerName;
 	private int age;
 	private String mobileNumber;
+	private String password;
 	private String countryCode;
 	private String address;
 	private String idProof;
@@ -30,6 +31,13 @@ public class CustomerDetails {
 	}
 	public void setMobileNumber(String mobileNumber) {
 		this.mobileNumber = mobileNumber;
+	}
+	
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
 	}
 	public String getAddress() {
 		return address;
@@ -65,13 +73,11 @@ public class CustomerDetails {
 	@Override
 	public String toString() {
 		return "CustomerDetails [id=" + id + ", customerName=" + customerName + ", age=" + age + ", mobileNumber="
-				+ mobileNumber + ", countryCode=" + countryCode + ", address=" + address + ", idProof=" + idProof
-				+ ", maritalStatus=" + maritalStatus + ", getId()=" + getId() + ", getCustomerName()="
-				+ getCustomerName() + ", getAge()=" + getAge() + ", getMobileNumber()=" + getMobileNumber()
-				+ ", getAddress()=" + getAddress() + ", getIdProof()=" + getIdProof() + ", getMaritalStatus()="
-				+ getMaritalStatus() + ", getCountryCode()=" + getCountryCode() + ", getClass()=" + getClass()
-				+ ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
-	}	
+				+ mobileNumber + ", password=" + password + ", countryCode=" + countryCode + ", address=" + address
+				+ ", idProof=" + idProof + ", maritalStatus=" + maritalStatus + "]";
+	}
+	
+	
 }
 
 enum MaritalStatus {
