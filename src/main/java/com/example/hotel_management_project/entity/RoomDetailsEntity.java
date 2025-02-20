@@ -1,16 +1,25 @@
 package com.example.hotel_management_project.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.example.hotel_management_project.enums.RoomStatus;
+import com.example.hotel_management_project.enums.RoomType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -44,7 +53,9 @@ public class RoomDetailsEntity {
 	@DateTimeFormat
 	private LocalDateTime checkoutTime;
 	
-	
+	@OneToMany(mappedBy = "roomDetailsEntity",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JsonIgnore
+	private List<CustomerLogsEntity> logs = new ArrayList<>();
 	
 	public Long getId() {
 		return id;
@@ -94,22 +105,19 @@ public class RoomDetailsEntity {
 	public void setCheckoutTime(LocalDateTime checkoutTime) {
 		this.checkoutTime = checkoutTime;
 	}
+	public List<CustomerLogsEntity> getLogs() {
+		return logs;
+	}
+	public void setLogs(List<CustomerLogsEntity> logs) {
+		this.logs = logs;
+	}
 	@Override
 	public String toString() {
 		return "RoomDetailsEntity [id=" + id + ", roomNo=" + roomNo + ", roomType=" + roomType + ", roomStatus="
 				+ roomStatus + ", price=" + price + ", checkInType=" + checkInType + ", idProofType=" + idProofType
-				+ ", checkoutTime=" + checkoutTime + "]";
+				+ ", checkoutTime=" + checkoutTime + ", logs=" + logs + "]";
 	}
-	
+
 }
 
-enum RoomType {
-	NONAC,
-	AC,
-}
-
-enum RoomStatus {
-	NOTAVAILABLE,
-	AVAILABLE,
-}
 

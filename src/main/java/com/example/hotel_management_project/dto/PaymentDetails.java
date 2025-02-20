@@ -1,12 +1,15 @@
 package com.example.hotel_management_project.dto;
 
+import com.example.hotel_management_project.enums.PaymentMethod;
+import com.example.hotel_management_project.enums.PaymentStatus;
+
 public class PaymentDetails {
 	
 	private Long id;
 	private Double stayDays;
 	private Double totalPrice;
 	private PaymentMethod paymentMethod = PaymentMethod.CASH;
-	private PaymentStatus paymentStatus = PaymentStatus.FAILED;
+	private PaymentStatus paymentStatus;
 	
 	
 	public Long getId() {
@@ -43,19 +46,5 @@ public class PaymentDetails {
 	public String toString() {
 		return "PaymentDetails [id=" + id + ", stayDays=" + stayDays + ", totalPrice=" + totalPrice + ", paymentMethod="
 				+ paymentMethod + ", paymentStatus=" + paymentStatus + "]";
-	}
-	
-	
-}
-
-enum PaymentMethod {
-	UPI,
-	CREDITCARD,
-	DEBITCARD,
-	CASH,
-}
-
-enum PaymentStatus {
-	SUCCESS,
-	FAILED,
+	}	
 }

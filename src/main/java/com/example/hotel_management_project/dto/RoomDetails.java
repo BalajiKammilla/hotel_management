@@ -2,6 +2,9 @@ package com.example.hotel_management_project.dto;
 
 import java.time.LocalDateTime;
 
+import com.example.hotel_management_project.enums.RoomStatus;
+import com.example.hotel_management_project.enums.RoomType;
+
 public class RoomDetails {
 	
 	private Long id;
@@ -51,8 +54,6 @@ public class RoomDetails {
 	public void setCheckoutTime(LocalDateTime checkoutTime) {
 		this.checkoutTime = checkoutTime;
 	}
-	
-	
 	public String getCheckInType() {
 		return checkInType;
 	}
@@ -70,16 +71,5 @@ public class RoomDetails {
 		return "RoomDetails [id=" + id + ", roomNo=" + roomNo + ", roomType=" + roomType + ", roomStatus=" + roomStatus
 				+ ", price=" + price + ", checkInType=" + checkInType + ", idProofType=" + idProofType
 				+ ", checkoutTime=" + checkoutTime + "]";
-	}
-	
-}
-
-enum RoomType {
-	NONAC,
-	AC,
-}
-
-enum RoomStatus {
-	NOTAVAILABLE,
-	AVAILABLE,
+	}	
 }

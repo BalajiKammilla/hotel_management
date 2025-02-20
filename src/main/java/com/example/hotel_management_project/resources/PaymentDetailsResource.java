@@ -22,7 +22,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "Payment Details")
 @RestController
-@RequestMapping("/api/payment")
+@RequestMapping("/payment")
 public class PaymentDetailsResource {
 	
 	@Autowired

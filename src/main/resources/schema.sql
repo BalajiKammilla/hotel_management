@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS customer_logs;
 DROP TABLE IF EXISTS customer_details;
 DROP TABLE IF EXISTS room_details;
 DROP TABLE IF EXISTS payment_details;
@@ -32,10 +33,17 @@ CREATE TABLE payment_details (
     payment_method VARCHAR(50) NOT NULL,
     payment_status VARCHAR(50) NOT NULL
 );
+CREATE TABLE customer_logs (
+    id SERIAL PRIMARY KEY,
+    customer_id INT REFERENCES customer_details(id),
+    log_timestamp TIMESTAMP NOT NULL,
+    room_id INT REFERENCES room_details(id),
+    payment_id INT REFERENCES payment_details(id)
+);
 
 INSERT INTO customer_details (customerName, age, mobileNumber, password, countryCode, address, idProof, maritalStatus)
-VALUES 
-    ('John Doe', 30, '1234567890', '$2a$12$dS2C9SD1jAzVLQNABmefpeGgVvLEt3BBjGTjCWplakL/UwsS3y.2.', 'IN', '123 Main St, City', 'Aadhar123', 'MARRIED');
+VALUES ('John Doe', 30, '1234567890', '$2a$12$dS2C9SD1jAzVLQNABmefpeGgVvLEt3BBjGTjCWplakL/UwsS3y.2.', 'IN', '123 Main St, City', 'Aadhar123', 'MARRIED'),
+('Admin', 30, '8096602533',  '$2a$12$rLk/mhDggXcja21FLKU1R.L3JrcjafyEMlMX35sAbXt75jhUX3KZa', '+91', 'Hyderabad', 'PAN', 'MARRIED');
 
 INSERT INTO room_details (roomNo, roomType, roomStatus, price, checkInType, idProofType, checkoutTime)
 VALUES

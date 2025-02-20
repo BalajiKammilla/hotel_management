@@ -1,5 +1,6 @@
 package com.example.hotel_management_project.dto;
 
+import com.example.hotel_management_project.enums.MaritalStatus;
 
 public class CustomerDetails {
 	
@@ -76,13 +77,4 @@ public class CustomerDetails {
 				+ mobileNumber + ", password=" + password + ", countryCode=" + countryCode + ", address=" + address
 				+ ", idProof=" + idProof + ", maritalStatus=" + maritalStatus + "]";
 	}
-	
-	
-}
-
-enum MaritalStatus {
-	MARRIED,
-	UNMARRIED,
-	DIVORCED,
-	NOTDEFINED,
 }

@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,11 +13,17 @@ import org.springframework.stereotype.Service;
 
 import com.example.hotel_management_project.dto.CustomerDetails;
 import com.example.hotel_management_project.entity.CustomerDetailsEntity;
+import com.example.hotel_management_project.enums.MaritalStatus;
+import com.example.hotel_management_project.exception.UserNotFoundException;
 import com.example.hotel_management_project.exception.ValidationException;
 import com.example.hotel_management_project.repositoryPl.CustomerRepository;
 import com.example.hotel_management_project.securityConfig.JWTService;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
 //import com.google.i18n.phonenumbers.PhoneNumberUtil;
 //import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
+import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class CustomerDetailsService {
@@ -45,6 +49,7 @@ public class CustomerDetailsService {
 		return customerRepository.findById(id);
 	}
 	
+	 @Transactional
 	public List<CustomerDetailsEntity> getAllCustomers() {
 		return customerRepository.findAll();
 	}
@@ -68,15 +73,16 @@ public class CustomerDetailsService {
         entity.setCustomerName(customerDetails.getCustomerName());
         entity.setAge(customerDetails.getAge());
         entity.setAddress(customerDetails.getAddress());
-        entity.setCountryCode(customerDetails.getCountryCode());
+        entity.setCountryCode(customerDetails.getCountryCode() != null ? customerDetails.getCountryCode() : "+91");
         entity.setIdProof(customerDetails.getIdProof());
         entity.setMobileNumber(customerDetails.getMobileNumber());
         entity.setPassword(encoder.encode(customerDetails.getPassword()));
+        entity.setMaritalStatus(customerDetails.getMaritalStatus() != null ? customerDetails.getMaritalStatus() : MaritalStatus.NOTDEFINED);
      
         return customerRepository.save(entity);
     }
 
-	/*private void PhoneNumberValidation(CustomerDetails customerDetails) {
+/*	private void PhoneNumberValidation(CustomerDetails customerDetails) {
 		try {
 	        PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
 	        PhoneNumber phoneNumber = phoneNumberUtil.parse(customerDetails.getMobileNumber(), customerDetails.getCountryCode());
@@ -87,7 +93,7 @@ public class CustomerDetailsService {
 	    } catch (Exception e) {
 	        throw new ValidationException("Invalid MobileNumber format or country code");
 	    }
-	}*/
+	} */
 	
 	private void CustomerDetailsValidations(CustomerDetails customerDetails) {
 		
@@ -106,9 +112,9 @@ public class CustomerDetailsService {
 		if(customerDetails.getAge() <= 0) {
 			throw new ValidationException("Age must be greater than 0");
 		}
-		if(customerDetails.getCountryCode() == null || customerDetails.getCountryCode().isEmpty()) {
-			throw new ValidationException("Country code cannot be null or empty");
-		}
+//		if(customerDetails.getCountryCode() == null || customerDetails.getCountryCode().isEmpty()) {
+//			throw new ValidationException("Country code cannot be null or empty");
+//		}
 		if(customerDetails.getIdProof() == null || customerDetails.getIdProof().isEmpty()) {
 			throw new ValidationException("IdProof cannot be null or empty");
 		}
@@ -138,7 +144,7 @@ public class CustomerDetailsService {
 	
 	public void deleteCustomer(Long id) {
 		if(!customerRepository.existsById(id)) {
-			throw new RuntimeException("Customer not found with id"+id);
+			throw new UserNotFoundException("Customer not found with id"+id);
 		}
 		customerRepository.deleteById(id);
 	}

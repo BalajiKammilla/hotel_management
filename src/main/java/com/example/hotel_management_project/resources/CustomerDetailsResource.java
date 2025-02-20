@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.hotel_management_project.dto.CustomerDetails;
@@ -23,16 +22,17 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.websocket.server.PathParam;
+import jakarta.annotation.security.RolesAllowed;
 
 @Tag(name = "Customer Details")
 @RestController
-@RequestMapping("customer")
+@RequestMapping("/customer")
 public class CustomerDetailsResource {
 	
 	@Autowired
 	private CustomerDetailsService customerDetailsService;
 	
+
 	@GetMapping("/check")
 	public String getString() {
 		return "Customer Resource";
