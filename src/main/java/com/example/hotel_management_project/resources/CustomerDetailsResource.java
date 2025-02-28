@@ -55,6 +55,14 @@ public class CustomerDetailsResource {
 	}
 	
     @Operation(
+    		summary = "Retreives the customer details with CustomerID ",
+    		description = "Fetches the the cutomer details using unique reference customerID if found")
+    @GetMapping("/detail/{customerID}")
+    public Optional<CustomerDetailsEntity> getDetailsByCustomerID(@PathVariable String customerID){
+    	return customerDetailsService.getByCustomerID(customerID);
+    }
+    
+    @Operation(
     		summary = "Retreives CustomerDetails By CustomerName",
     		description = "Fetches customer's details using the particular customer name if found")
     @ApiResponses({

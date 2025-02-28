@@ -5,6 +5,7 @@ import com.example.hotel_management_project.enums.MaritalStatus;
 public class CustomerDetails {
 	
 	private Long id;
+	private String customerID;
 	private String customerName;
 	private int age;
 	private String mobileNumber;
@@ -20,6 +21,12 @@ public class CustomerDetails {
 	}
 	public void setId(Long id) {
 		this.id = id;
+	}
+	public String getCustomerID() {
+		return customerID;
+	}
+	public void setCustomerID(String customerID) {
+		this.customerID = customerID;
 	}
 	public String getCustomerName() {
 		return customerName;
@@ -71,10 +78,11 @@ public class CustomerDetails {
 	public void setCountryCode(String countryCode) {
 		this.countryCode = countryCode;
 	}
+	
 	@Override
 	public String toString() {
-		return "CustomerDetails [id=" + id + ", customerName=" + customerName + ", age=" + age + ", mobileNumber="
-				+ mobileNumber + ", password=" + password + ", countryCode=" + countryCode + ", address=" + address
-				+ ", idProof=" + idProof + ", maritalStatus=" + maritalStatus + "]";
+		return "CustomerDetails [id=" + id + ", customerID=" + customerID + ", customerName=" + customerName + ", age="
+				+ age + ", mobileNumber=" + mobileNumber + ", password=" + password + ", countryCode=" + countryCode
+				+ ", address=" + address + ", idProof=" + idProof + ", maritalStatus=" + maritalStatus + "]";
 	}
 }

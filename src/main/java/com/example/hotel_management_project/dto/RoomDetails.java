@@ -14,7 +14,7 @@ public class RoomDetails {
 	private Double price;
 	private String checkInType;
 	private String idProofType;
-	private LocalDateTime checkoutTime;
+	private LocalDateTime checkoutTime = LocalDateTime.now();
 	
 	
 	

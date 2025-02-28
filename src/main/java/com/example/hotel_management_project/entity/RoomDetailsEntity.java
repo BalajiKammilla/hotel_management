@@ -30,26 +30,27 @@ public class RoomDetailsEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(name = "roomNo")
+	@Column(name = "roomno")
 	private Long roomNo;
 	
-	@Column(name = "roomType")
+	@Column(name = "roomtype")
 	@Enumerated(EnumType.STRING)
 	private RoomType roomType;
 	
-	@Column(name = "roomStatus")
+	@Column(name = "roomstatus")
 	@Enumerated(EnumType.STRING)
 	private RoomStatus roomStatus;
 	
 	@Column(name = "price")
 	private Double price;
 	
-	@Column(name = "checkInType")
+	@Column(name = "checkintype")
 	private String checkInType;
 	
-	@Column(name = "idProofType")
+	@Column(name = "idprooftype")
 	private String idProofType;
 	
+	@Column(name = "checkouttime")
 	@DateTimeFormat
 	private LocalDateTime checkoutTime;
 	
@@ -117,6 +118,7 @@ public class RoomDetailsEntity {
 				+ roomStatus + ", price=" + price + ", checkInType=" + checkInType + ", idProofType=" + idProofType
 				+ ", checkoutTime=" + checkoutTime + ", logs=" + logs + "]";
 	}
+
 
 }
 

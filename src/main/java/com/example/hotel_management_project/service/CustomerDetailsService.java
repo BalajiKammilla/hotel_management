@@ -1,5 +1,6 @@
 package com.example.hotel_management_project.service;
 
+import java.time.Year;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,13 @@ public class CustomerDetailsService {
 		}
 		return customerRepository.findById(id);
 	}
+//	<-- to get the details of customer using Reference CustomerID -->  
+	 public Optional<CustomerDetailsEntity> getByCustomerID(String customerID){
+		 if(customerID == null || customerID.isEmpty()) {
+			 throw new RuntimeException("Invalid customerID please re-enter correct customerID");
+		 }
+		 return customerRepository.findByCustomerID(customerID);
+	 }
 	
 	 @Transactional
 	public List<CustomerDetailsEntity> getAllCustomers() {
@@ -68,9 +76,11 @@ public class CustomerDetailsService {
 		
 		CustomerDetailsValidations(customerDetails);
 //		PhoneNumberValidation(customerDetails);
+		String custId = generateRegistrationID(customerDetails.getCustomerName());
 		
         CustomerDetailsEntity entity = new CustomerDetailsEntity();
         entity.setCustomerName(customerDetails.getCustomerName());
+        entity.setCustomerID(custId);
         entity.setAge(customerDetails.getAge());
         entity.setAddress(customerDetails.getAddress());
         entity.setCountryCode(customerDetails.getCountryCode() != null ? customerDetails.getCountryCode() : "+91");
@@ -94,6 +104,8 @@ public class CustomerDetailsService {
 	        throw new ValidationException("Invalid MobileNumber format or country code");
 	    }
 	} */
+	
+//	<-- all parameters are validated before saving into the db -->
 	
 	private void CustomerDetailsValidations(CustomerDetails customerDetails) {
 		
@@ -148,7 +160,8 @@ public class CustomerDetailsService {
 		}
 		customerRepository.deleteById(id);
 	}
-	
+
+//	 <-- to verify the customer details and authenticate to generate JWT token -->
 	public String VerifyCustomer(CustomerDetails details) {
 		Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(details.getCustomerName(),details.getPassword()));
 		if(authentication.isAuthenticated()) {
@@ -195,5 +208,29 @@ public class CustomerDetailsService {
 		return "Password reset Successfully !";
 	}*/
 	
-
+	
+	private String generateRegistrationID(String customerName) {
+		if(customerName == null || customerName.trim().isEmpty()) {
+			throw new IllegalArgumentException("CustomerName should not be null or empty");
+		}
+		
+		String year = String.valueOf(Year.now().getValue()).substring(2);
+		String firstLetterOfCustomerName = customerName.trim().substring(0, 1).toUpperCase();
+		String prefix = year + firstLetterOfCustomerName;
+		
+		Optional<CustomerDetailsEntity> lastCustomer = customerRepository.findTopByCustomerIDStartingWithOrderByCustomerIDDesc(prefix);
+		int sequenceNumber = 101;
+		
+		if(lastCustomer.isPresent()) {
+			String lastCustId = lastCustomer.get().getCustomerID();
+			String lastDigitStr = lastCustId.substring(prefix.length());
+			
+			try {
+				sequenceNumber = Integer.parseInt(lastDigitStr) + 1;
+			} catch(NumberFormatException e) {
+				throw new RuntimeException("Invalid CustomerId Format"+ lastCustId);
+			}
+		}
+		return prefix + sequenceNumber;
+	}
 }

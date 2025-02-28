@@ -86,4 +86,5 @@ public class PaymentDetailsEntity {
 		return "PaymentDetailsEntity [id=" + id + ", stayDays=" + stayDays + ", totalPrice=" + totalPrice
 				+ ", paymentMethod=" + paymentMethod + ", paymentStatus=" + paymentStatus + ", logs=" + logs + "]";
 	}
+
 }

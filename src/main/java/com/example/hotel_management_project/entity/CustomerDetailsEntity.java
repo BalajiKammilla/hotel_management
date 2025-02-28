@@ -30,6 +30,9 @@ public class CustomerDetailsEntity {
 	@Column(name = "customername")
 	private String customerName;
 	
+	@Column(name = "customerid", unique = true, nullable = false)
+	private String customerID;
+	
 	@Column(name = "age")
 	private int age;
 	
@@ -61,6 +64,12 @@ public class CustomerDetailsEntity {
 	}
 	public void setId(Long id) {
 		this.id = id;
+	}
+	public String getCustomerID() {
+		return customerID;
+	}
+	public void setCustomerID(String customerID) {
+		this.customerID = customerID;
 	}
 	public String getCustomerName() {
 		return customerName;
@@ -118,9 +127,9 @@ public class CustomerDetailsEntity {
 	}
 	@Override
 	public String toString() {
-		return "CustomerDetailsEntity [id=" + id + ", customerName=" + customerName + ", age=" + age + ", mobileNumber="
-				+ mobileNumber + ", password=" + password + ", countryCode=" + countryCode + ", address=" + address
-				+ ", idProof=" + idProof + ", maritalStatus=" + maritalStatus + ", logs=" + logs + "]";
+		return "CustomerDetails [id=" + id + ", customerID=" + customerID + ", customerName=" + customerName + ", age="
+				+ age + ", mobileNumber=" + mobileNumber + ", password=" + password + ", countryCode=" + countryCode
+				+ ", address=" + address + ", idProof=" + idProof + ", maritalStatus=" + maritalStatus + "]";
 	}
 
 }
