@@ -5,13 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+
+import org.hibernate.validator.internal.util.logging.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import com.example.hotel_management_project.dto.CustomerDetails;
 import com.example.hotel_management_project.entity.CustomerDetailsEntity;
 import com.example.hotel_management_project.enums.MaritalStatus;
@@ -23,11 +26,13 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 //import com.google.i18n.phonenumbers.PhoneNumberUtil;
 //import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
-
 import jakarta.transaction.Transactional;
 
 @Service
 public class CustomerDetailsService {
+	
+	
+	private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CustomerDetailsService.class);
 	
 	@Autowired
 	private JWTService jwtService;
@@ -42,14 +47,15 @@ public class CustomerDetailsService {
 	
 	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 	
+	
 	 public Optional<CustomerDetailsEntity> getCustomerDetailsById(Long id) {
-		
 		if(id == null || id <= 0) {
 			throw new ValidationException("Invalid Id, ID must be positive number");
 		}
 		return customerRepository.findById(id);
 	}
-//	<-- to get the details of customer using Reference CustomerID -->  
+	 
+	  
 	 public Optional<CustomerDetailsEntity> getByCustomerID(String customerID){
 		 if(customerID == null || customerID.isEmpty()) {
 			 throw new RuntimeException("Invalid customerID please re-enter correct customerID");
@@ -57,7 +63,8 @@ public class CustomerDetailsService {
 		 return customerRepository.findByCustomerID(customerID);
 	 }
 	
-	 @Transactional
+	 
+	@Transactional
 	public List<CustomerDetailsEntity> getAllCustomers() {
 		return customerRepository.findAll();
 	}
@@ -65,9 +72,9 @@ public class CustomerDetailsService {
 	
 	public List<CustomerDetailsEntity> getCustomersByName(String customerName) {
 		if(customerName == null || customerName.isEmpty()) {
+			logger.error("ERROR:CustomerName cannot be null or empty");
 			throw new ValidationException("CustomerName cannot be null or empty");
 		}
-		
 		return customerRepository.getCustomerDetailsByCustomerName(customerName);
 	}
 	
@@ -87,11 +94,13 @@ public class CustomerDetailsService {
         entity.setIdProof(customerDetails.getIdProof());
         entity.setMobileNumber(customerDetails.getMobileNumber());
         entity.setPassword(encoder.encode(customerDetails.getPassword()));
+        logger.info("ENCODE: password in encoded successfully");
         entity.setMaritalStatus(customerDetails.getMaritalStatus() != null ? customerDetails.getMaritalStatus() : MaritalStatus.NOTDEFINED);
-     
+       
         return customerRepository.save(entity);
     }
 
+	
 /*	private void PhoneNumberValidation(CustomerDetails customerDetails) {
 		try {
 	        PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
@@ -105,8 +114,8 @@ public class CustomerDetailsService {
 	    }
 	} */
 	
-//	<-- all parameters are validated before saving into the db -->
 	
+
 	private void CustomerDetailsValidations(CustomerDetails customerDetails) {
 		
 		if(customerDetails.getCustomerName() == null || customerDetails.getCustomerName().isEmpty() && customerDetails.getCustomerName().length() >= 50) {
@@ -115,28 +124,33 @@ public class CustomerDetailsService {
 		if(!customerDetails.getCustomerName().matches("[A-Za-z\\s]+")) {
 			throw new ValidationException("CustomerName can only contain alphabets and spaces");
 		}
+		logger.info("customer name is validated !");
 		if(customerDetails.getAddress() == null || customerDetails.getAddress().isEmpty()) {
 			throw new ValidationException("Address cannot be null or empty");
 		}
 		if(customerDetails.getAddress().length() > 255) {
 			throw new ValidationException("Address cannot exceed 255 charcters");
 		}
+		logger.info("customer address is validated !");
 		if(customerDetails.getAge() <= 0) {
 			throw new ValidationException("Age must be greater than 0");
 		}
-//		if(customerDetails.getCountryCode() == null || customerDetails.getCountryCode().isEmpty()) {
-//			throw new ValidationException("Country code cannot be null or empty");
-//		}
+		logger.info("customer age is validated !");
 		if(customerDetails.getIdProof() == null || customerDetails.getIdProof().isEmpty()) {
 			throw new ValidationException("IdProof cannot be null or empty");
 		}
+		logger.info("customer identity is validated !");
 		if(customerDetails.getMobileNumber().equals("+91") && customerDetails.getMobileNumber() == null || !customerDetails.getMobileNumber().matches("\\d{10}")) {
 			throw new ValidationException("Invalid MobileNumber, Indian mobileNumbers should conatain 10 digits");
 		}
+		logger.info("customer mobile number is validated !");
 		if(customerRepository.existsByMobileNumber(customerDetails.getMobileNumber())) {
+			logger.error("mobile number is exists");
 			throw new ValidationException("Mobile number already exists");
 		}
+		logger.info("mobile number is not exist in database");
 	}
+	
 	
 	public CustomerDetailsEntity updateDetails(Long id, CustomerDetails custDetails) {
 		
@@ -161,12 +175,14 @@ public class CustomerDetailsService {
 		customerRepository.deleteById(id);
 	}
 
-//	 <-- to verify the customer details and authenticate to generate JWT token -->
+	
 	public String VerifyCustomer(CustomerDetails details) {
 		Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(details.getCustomerName(),details.getPassword()));
 		if(authentication.isAuthenticated()) {
+			logger.info("customer details are authenticated successfully");
 			return jwtService.generateToken(details.getCustomerName());
-		}	
+		}
+		logger.error("customer details are invalid");
 		return "failed verification";
 	}
 	
@@ -219,6 +235,7 @@ public class CustomerDetailsService {
 		String prefix = year + firstLetterOfCustomerName;
 		
 		Optional<CustomerDetailsEntity> lastCustomer = customerRepository.findTopByCustomerIDStartingWithOrderByCustomerIDDesc(prefix);
+		logger.info("fetched last customer who used the prefix");
 		int sequenceNumber = 101;
 		
 		if(lastCustomer.isPresent()) {
@@ -231,6 +248,7 @@ public class CustomerDetailsService {
 				throw new RuntimeException("Invalid CustomerId Format"+ lastCustId);
 			}
 		}
+		logger.info("CustomerID generated and returned");
 		return prefix + sequenceNumber;
 	}
 }
