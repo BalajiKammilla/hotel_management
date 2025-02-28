@@ -16,11 +16,13 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "customer_details")
+@Table(name = "customer_details",
+indexes = @Index(name = "idx_customer_id", columnList = "customerid"))
 public class CustomerDetailsEntity {
 	
 	@Id

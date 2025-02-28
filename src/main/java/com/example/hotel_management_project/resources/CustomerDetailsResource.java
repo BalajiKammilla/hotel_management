@@ -165,4 +165,5 @@ public class CustomerDetailsResource {
 //        String response = customerDetailsService.resetPassword(mobileNumber, otp, newPassword);
 //        return ResponseEntity.ok(response);
 //	}
+    
 }
