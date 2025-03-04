@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.example.hotel_management_project.entity.CustomerDetailsEntity;
 
+@SuppressWarnings("serial")
 public class UserPrincipal implements UserDetails {
 	
 	private CustomerDetailsEntity customer;

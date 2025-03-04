@@ -17,4 +17,5 @@ public interface CustomerRepository extends JpaRepository<CustomerDetailsEntity,
 		Optional<CustomerDetailsEntity> findByMobileNumber(String mobileNumber);
 		Optional<CustomerDetailsEntity> findByCustomerID(String customerID);
 		Optional<CustomerDetailsEntity> findTopByCustomerIDStartingWithOrderByCustomerIDDesc(String prefix);
+		Optional<CustomerDetailsEntity> findTopByOrderByIdDesc();
 }

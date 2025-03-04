@@ -28,6 +28,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("room")
 public class RoomDetailsResource {
 	
+	private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(RoomDetailsResource.class);
+	
 	@Autowired
 	private RoomDetailsService roomDetailsService;
 	
@@ -48,6 +50,7 @@ public class RoomDetailsResource {
         })
 	@GetMapping("/details/{id}")
 	public Optional<RoomDetailsEntity> findById(@PathVariable Long id) {
+    	logger.info("INFO:Room details are fetched by id");
 		return roomDetailsService.getRoomDetailsById(id);
 	}
 	
@@ -63,6 +66,7 @@ public class RoomDetailsResource {
 	@GetMapping
 	public ResponseEntity<List<RoomDetailsEntity>> findAllDetails() {
 		List<RoomDetailsEntity> list = roomDetailsService.getAllRoomDetials();
+		logger.info("INFO:fetched all room details successfully");
 		return ResponseEntity.ok(list);
 	}
 	
@@ -78,6 +82,7 @@ public class RoomDetailsResource {
         })
 	@GetMapping("/{roomType}")
 	public List<RoomDetailsEntity> findByRoomType(@PathVariable String roomType) {
+    	logger.info("INFO:fetched room details by the type of room");
 		return roomDetailsService.getRoomByroomType(roomType);
 	}
 	
@@ -95,6 +100,7 @@ public class RoomDetailsResource {
 	@PostMapping("/save")
 	public ResponseEntity<RoomDetailsEntity> saveDetails(@RequestBody RoomDetails details){
 		RoomDetailsEntity roomDeatils = roomDetailsService.saveDetails(details);
+		logger.info("INFO:successfully saved room details");
 		return ResponseEntity.status(200).body(roomDeatils);
 	}
 	
@@ -111,8 +117,8 @@ public class RoomDetailsResource {
         })
 	@PutMapping("/update/{id}")
 	public ResponseEntity<RoomDetailsEntity> updateDetails(@PathVariable Long id, @RequestBody RoomDetails details){
-		
 		RoomDetailsEntity updateEntity = roomDetailsService.updateDetails(id, details);
+		logger.info("INFO:room details updated successfully");
 		return ResponseEntity.ok(updateEntity);
 	}
 	
@@ -129,6 +135,7 @@ public class RoomDetailsResource {
 	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<RoomDetailsEntity> deleteBydetail(@PathVariable Long id){
 		roomDetailsService.deleteRoom(id);
+		logger.info("INFO:room details deleted successfully");
 		return ResponseEntity.noContent().build();
 	}
 

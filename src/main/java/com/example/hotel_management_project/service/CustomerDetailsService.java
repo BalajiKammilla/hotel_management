@@ -5,10 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
-
-import org.hibernate.validator.internal.util.logging.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,10 +18,8 @@ import com.example.hotel_management_project.exception.UserNotFoundException;
 import com.example.hotel_management_project.exception.ValidationException;
 import com.example.hotel_management_project.repositoryPl.CustomerRepository;
 import com.example.hotel_management_project.securityConfig.JWTService;
-import com.google.i18n.phonenumbers.PhoneNumberUtil;
 //import com.google.i18n.phonenumbers.PhoneNumberUtil;
 //import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
-import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -43,7 +37,7 @@ public class CustomerDetailsService {
 	@Autowired
 	private AuthenticationManager authManager;
 	
-	private Map<String, String> otpStore = new HashMap();
+	private Map<String, String> otpStore = new HashMap<String, String>();
 	
 	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 	
@@ -96,7 +90,7 @@ public class CustomerDetailsService {
         entity.setPassword(encoder.encode(customerDetails.getPassword()));
         logger.info("ENCODE: password in encoded successfully");
         entity.setMaritalStatus(customerDetails.getMaritalStatus() != null ? customerDetails.getMaritalStatus() : MaritalStatus.NOTDEFINED);
-       
+        
         return customerRepository.save(entity);
     }
 
@@ -143,19 +137,18 @@ public class CustomerDetailsService {
 		if(customerDetails.getMobileNumber().equals("+91") && customerDetails.getMobileNumber() == null || !customerDetails.getMobileNumber().matches("\\d{10}")) {
 			throw new ValidationException("Invalid MobileNumber, Indian mobileNumbers should conatain 10 digits");
 		}
-		logger.info("customer mobile number is validated !");
 		if(customerRepository.existsByMobileNumber(customerDetails.getMobileNumber())) {
-			logger.error("mobile number is exists");
+			logger.error("ERROR:mobile number is exists");
 			throw new ValidationException("Mobile number already exists");
 		}
-		logger.info("mobile number is not exist in database");
+		logger.info("customer mobile number is validated !");
 	}
 	
 	
-	public CustomerDetailsEntity updateDetails(Long id, CustomerDetails custDetails) {
+	public CustomerDetailsEntity updateDetails(String customerId, CustomerDetails custDetails) {
 		
-	      CustomerDetailsEntity existingEntity = customerRepository.findById(id)
-	              .orElseThrow(() -> new RuntimeException("Customer not found with id: " + id));
+	      CustomerDetailsEntity existingEntity = customerRepository.findByCustomerID(customerId)
+	              .orElseThrow(() -> new RuntimeException("Customer not found with CustomerID: " + customerId));
 	      
 	      existingEntity.setCustomerName(custDetails.getCustomerName());
 	      existingEntity.setAddress(custDetails.getAddress());
@@ -164,6 +157,7 @@ public class CustomerDetailsService {
 	      existingEntity.setIdProof(custDetails.getIdProof());
 	      existingEntity.setMobileNumber(custDetails.getMobileNumber());
 	      
+	      logger.info("INFO:Customer details are updated by customerID");
 	      return customerRepository.save(existingEntity);
 	}
 	
@@ -182,7 +176,7 @@ public class CustomerDetailsService {
 			logger.info("customer details are authenticated successfully");
 			return jwtService.generateToken(details.getCustomerName());
 		}
-		logger.error("customer details are invalid");
+		logger.error("ERROR:customer details are invalid");
 		return "failed verification";
 	}
 	
@@ -250,5 +244,15 @@ public class CustomerDetailsService {
 		}
 		logger.info("CustomerID generated and returned");
 		return prefix + sequenceNumber;
+	}
+
+
+	public Map<String, String> getOtpStore() {
+		return otpStore;
+	}
+
+
+	public void setOtpStore(Map<String, String> otpStore) {
+		this.otpStore = otpStore;
 	}
 }

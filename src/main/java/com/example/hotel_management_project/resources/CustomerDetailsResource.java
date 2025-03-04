@@ -128,17 +128,17 @@ public class CustomerDetailsResource {
 	
     
     @Operation(
-    		summary = "Update The CustomerDetails By Id",
-    		description = "Alter and update customer's details by Id")
+    		summary = "Update The CustomerDetails By customerId",
+    		description = "Alter and update customer's details by CustomerId")
     @ApiResponses({
     	@ApiResponse(responseCode = "200", description = "Customer details updated successfully"),
     	@ApiResponse(responseCode = "401", description = "Customer ID not found"),
         @ApiResponse(responseCode = "404", description = "Customer not found"),
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })  
-	@PutMapping("/update/{id}")
-	public ResponseEntity<CustomerDetailsEntity> upadteDetails(@PathVariable Long id, @RequestBody CustomerDetails details){
-		CustomerDetailsEntity updatedEntity = customerDetailsService.updateDetails(id, details);
+	@PutMapping("/update/{customerid}")
+	public ResponseEntity<CustomerDetailsEntity> upadteDetails(@PathVariable String customerID, @RequestBody CustomerDetails details){
+		CustomerDetailsEntity updatedEntity = customerDetailsService.updateDetails(customerID, details);
 		logger.info("INFO:successfully updated customer details");
 		return ResponseEntity.ok(updatedEntity);
 	}

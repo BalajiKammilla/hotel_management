@@ -16,8 +16,7 @@ public class RoomDetailsService {
 	
 	@Autowired
 	private RoomRepository roomRepository;
-	
-	
+		
 	public Optional<RoomDetailsEntity> getRoomDetailsById(Long id) {
 		if(id == null || id <= 0) {
 			throw new ValidationException("Id should be greater than 0");
@@ -54,7 +53,7 @@ public class RoomDetailsService {
 		entity.setIdProofType(roomDetails.getIdProofType());
 		entity.setCheckInType(roomDetails.getCheckInType());
 		entity.setCheckoutTime(roomDetails.getCheckoutTime());
-		
+
 		return roomRepository.save(entity);
 	}
 	

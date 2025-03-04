@@ -1,5 +1,6 @@
 package com.example.hotel_management_project.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,16 +8,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.hotel_management_project.dto.PaymentDetails;
+import com.example.hotel_management_project.entity.CustomerDetailsEntity;
+import com.example.hotel_management_project.entity.CustomerLogsEntity;
 import com.example.hotel_management_project.entity.PaymentDetailsEntity;
+import com.example.hotel_management_project.entity.RoomDetailsEntity;
+import com.example.hotel_management_project.repositoryPl.CustomerLogRepository;
+import com.example.hotel_management_project.repositoryPl.CustomerRepository;
 import com.example.hotel_management_project.repositoryPl.PaymentRepository;
+import com.example.hotel_management_project.repositoryPl.RoomRepository;
 
 import jakarta.validation.ValidationException;
 
 @Service
 public class PaymentDetailsService {
 	
+	private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(PaymentDetailsService.class);
+	
 	@Autowired
 	private PaymentRepository paymentRepository;
+	@Autowired
+	private CustomerRepository customerRepository;
+	@Autowired
+	private RoomRepository roomRepository;
+	@Autowired
+	private CustomerLogRepository customerLogRepository;
 	
 	public Optional<PaymentDetailsEntity> getPaymentDetailsById(Long id) {
 		
@@ -49,7 +64,25 @@ public class PaymentDetailsService {
 		entity.setStayDays(payDetails.getStayDays());
 		entity.setTotalPrice(payDetails.getTotalPrice());
 		
-		return paymentRepository.save(entity);
+		PaymentDetailsEntity savedPayment = paymentRepository.save(entity);
+		logger.info("payment deatils saved successfully");
+		CustomerDetailsEntity latestCustomer = customerRepository.findTopByOrderByIdDesc()
+                .orElseThrow(() -> new RuntimeException("No customer found"));
+		logger.info("Fetched Last Customer to the application");
+        RoomDetailsEntity latestRoom = roomRepository.findTopByOrderByIdDesc()
+                .orElseThrow(() -> new RuntimeException("No room found"));
+        logger.info("Last booked room fetched successfully");
+
+        // Then, Create a Single Log Entry with all details
+        CustomerLogsEntity logsEntity = new CustomerLogsEntity();
+        logsEntity.setCustomerDetailsEntity(latestCustomer);
+        logsEntity.setRoomDetailsEntity(latestRoom);
+        logsEntity.setPaymentDetailsEntity(savedPayment);
+        logsEntity.setLogTimestamp(LocalDateTime.now());
+
+        customerLogRepository.save(logsEntity);
+        logger.info("saved customer's details into Customerlogs");
+        return savedPayment;
 	}
 	
 	public PaymentDetailsEntity updateDetails(Long id, PaymentDetails payDetails) {
