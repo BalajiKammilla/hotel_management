@@ -8,4 +8,5 @@ import com.example.hotel_management_project.entity.CustomerLogsEntity;
 @Repository
 public interface CustomerLogRepository extends JpaRepository<CustomerLogsEntity, Long>{
 	
+//	List<CustomerLogsEntity> getCustomerLogsByCustomerID(String customerID);
 }

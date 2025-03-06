@@ -34,7 +34,7 @@ public class PaymentDetailsResource {
 	}
 	
 	@GetMapping("/details/{id}")
-	public Optional<PaymentDetailsEntity> getpaymentDetialsById(@PathVariable Long id) {
+	public Optional<PaymentDetails> getpaymentDetialsById(@PathVariable Long id) {
 		return paymentDetailsService.getPaymentDetailsById(id);
 	}
 	
@@ -50,15 +50,15 @@ public class PaymentDetailsResource {
 	}
 	
 	@PostMapping("/save")
-	public ResponseEntity<PaymentDetailsEntity> saveDetails(@RequestBody PaymentDetails payDetails){
-		PaymentDetailsEntity saveEntity = paymentDetailsService.saveDetails(payDetails);
+	public ResponseEntity<PaymentDetails> saveDetails(@RequestBody PaymentDetails payDetails){
+		PaymentDetails saveEntity = paymentDetailsService.saveDetails(payDetails);
 		return ResponseEntity.status(200).body(saveEntity);
 	}
 	
 	@PutMapping("/update/{id}")
-	public ResponseEntity<PaymentDetailsEntity> updateDetails(@PathVariable Long id, @RequestBody PaymentDetails details){
+	public ResponseEntity<PaymentDetails> updateDetails(@PathVariable Long id, @RequestBody PaymentDetails details){
 		
-		PaymentDetailsEntity updateEntity = paymentDetailsService.updateDetails(id, details);
+		PaymentDetails updateEntity = paymentDetailsService.updateDetails(id, details);
 		return ResponseEntity.ok(updateEntity);
 	}
 	

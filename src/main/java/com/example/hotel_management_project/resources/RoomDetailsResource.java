@@ -49,7 +49,7 @@ public class RoomDetailsResource {
             @ApiResponse(responseCode = "500", description = "Internal server error")
         })
 	@GetMapping("/details/{id}")
-	public Optional<RoomDetailsEntity> findById(@PathVariable Long id) {
+	public Optional<RoomDetails> findById(@PathVariable Long id) {
     	logger.info("INFO:Room details are fetched by id");
 		return roomDetailsService.getRoomDetailsById(id);
 	}
@@ -98,8 +98,8 @@ public class RoomDetailsResource {
             @ApiResponse(responseCode = "500", description = "Internal server error")
         })
 	@PostMapping("/save")
-	public ResponseEntity<RoomDetailsEntity> saveDetails(@RequestBody RoomDetails details){
-		RoomDetailsEntity roomDeatils = roomDetailsService.saveDetails(details);
+	public ResponseEntity<RoomDetails> saveDetails(@RequestBody RoomDetails details){
+		RoomDetails roomDeatils = roomDetailsService.saveDetails(details);
 		logger.info("INFO:successfully saved room details");
 		return ResponseEntity.status(200).body(roomDeatils);
 	}
@@ -116,8 +116,8 @@ public class RoomDetailsResource {
             @ApiResponse(responseCode = "500", description = "Internal server error")
         })
 	@PutMapping("/update/{id}")
-	public ResponseEntity<RoomDetailsEntity> updateDetails(@PathVariable Long id, @RequestBody RoomDetails details){
-		RoomDetailsEntity updateEntity = roomDetailsService.updateDetails(id, details);
+	public ResponseEntity<RoomDetails> updateDetails(@PathVariable Long id, @RequestBody RoomDetails details){
+		RoomDetails updateEntity = roomDetailsService.updateDetails(id, details);
 		logger.info("INFO:room details updated successfully");
 		return ResponseEntity.ok(updateEntity);
 	}
@@ -133,7 +133,7 @@ public class RoomDetailsResource {
             @ApiResponse(responseCode = "500", description = "Internal server error")
         })
 	@DeleteMapping("/delete/{id}")
-	public ResponseEntity<RoomDetailsEntity> deleteBydetail(@PathVariable Long id){
+	public ResponseEntity<RoomDetails> deleteBydetail(@PathVariable Long id){
 		roomDetailsService.deleteRoom(id);
 		logger.info("INFO:room details deleted successfully");
 		return ResponseEntity.noContent().build();

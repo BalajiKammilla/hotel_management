@@ -17,16 +17,15 @@ public class CustomerLogsResource {
 	@Autowired
 	private CustomerLogsService customerLogsService;
 	
-//	@PostMapping("/save")
-//	public ResponseEntity<CustomerLogsEntity> saveLogs
-//	(@RequestBody CustomerDetailsEntity details, @RequestBody RoomDetailsEntity roomDetails, @RequestBody PaymentDetailsEntity payDetails) {
-//		CustomerLogsEntity entity = customerLogsService.saveCustomerLogs(details, roomDetails, payDetails);
-//		return ResponseEntity.status(200).body(entity);
-//	}
 	
 	@GetMapping
 	public List<CustomerLogsEntity> getAllLogs() {
 		return customerLogsService.getAllCustomerLogs();
 	}
-
+	
+//	@GetMapping("/{customerID}")
+//	public List<CustomerLogsEntity> getLogsByCustomerID(@PathVariable String customerID){
+//		return customerLogsService.findCustomerLogsByCustomerID(customerID);
+//	}
+	
 }

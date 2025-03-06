@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.hotel_management_project.dto.RoomDetails;
 import com.example.hotel_management_project.entity.RoomDetailsEntity;
+import com.example.hotel_management_project.mapper.RoomDetailsModelMapper;
 import com.example.hotel_management_project.repositoryPl.RoomRepository;
 
 import jakarta.validation.ValidationException;
@@ -16,12 +17,16 @@ public class RoomDetailsService {
 	
 	@Autowired
 	private RoomRepository roomRepository;
+	
+	@Autowired
+	private RoomDetailsModelMapper roomDetailsModelMapper;
 		
-	public Optional<RoomDetailsEntity> getRoomDetailsById(Long id) {
+	public Optional<RoomDetails> getRoomDetailsById(Long id) {
 		if(id == null || id <= 0) {
 			throw new ValidationException("Id should be greater than 0");
 		}
-		return roomRepository.findById(id);
+		RoomDetailsEntity resultDetails = roomRepository.findById(id).get();
+		return Optional.of(roomDetailsModelMapper.convertToDto(resultDetails));
 	}
 	
 	public List<RoomDetailsEntity> getAllRoomDetials() {
@@ -32,7 +37,7 @@ public class RoomDetailsService {
 		return roomRepository.getRoomDetailsByRoomType(roomType);
 	}
 	
-	public RoomDetailsEntity saveDetails(RoomDetails roomDetails) {
+	public RoomDetails saveDetails(RoomDetails roomDetails) {
 		
 		if(roomDetails.getRoomNo() == null) {
 			throw new ValidationException("RoomNo cannot be null");
@@ -54,10 +59,11 @@ public class RoomDetailsService {
 		entity.setCheckInType(roomDetails.getCheckInType());
 		entity.setCheckoutTime(roomDetails.getCheckoutTime());
 
-		return roomRepository.save(entity);
+		RoomDetailsEntity savedDetails = roomRepository.save(entity);
+		return roomDetailsModelMapper.convertToDto(savedDetails);
 	}
 	
-	public RoomDetailsEntity updateDetails(Long id, RoomDetails roomDetails) {
+	public RoomDetails updateDetails(Long id, RoomDetails roomDetails) {
 		
 		RoomDetailsEntity existingEntity = roomRepository.findById(id)
 				.orElseThrow(() -> new RuntimeException("Room not found iwith id "+id));
@@ -67,7 +73,8 @@ public class RoomDetailsService {
 		existingEntity.setCheckInType(roomDetails.getCheckInType());
 		existingEntity.setCheckoutTime(roomDetails.getCheckoutTime());
 		
-		return roomRepository.save(existingEntity);
+		RoomDetailsEntity updatedDetails = roomRepository.save(existingEntity);
+		return roomDetailsModelMapper.convertToDto(updatedDetails);
 	}
 	
 	public void deleteRoom(Long id) {

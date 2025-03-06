@@ -12,6 +12,7 @@ import com.example.hotel_management_project.entity.CustomerDetailsEntity;
 import com.example.hotel_management_project.entity.CustomerLogsEntity;
 import com.example.hotel_management_project.entity.PaymentDetailsEntity;
 import com.example.hotel_management_project.entity.RoomDetailsEntity;
+import com.example.hotel_management_project.mapper.PaymentDetailsModelMapper;
 import com.example.hotel_management_project.repositoryPl.CustomerLogRepository;
 import com.example.hotel_management_project.repositoryPl.CustomerRepository;
 import com.example.hotel_management_project.repositoryPl.PaymentRepository;
@@ -32,14 +33,17 @@ public class PaymentDetailsService {
 	private RoomRepository roomRepository;
 	@Autowired
 	private CustomerLogRepository customerLogRepository;
+	@Autowired
+	private PaymentDetailsModelMapper paymentDetailsModelMapper;
 	
-	public Optional<PaymentDetailsEntity> getPaymentDetailsById(Long id) {
+	public Optional<PaymentDetails> getPaymentDetailsById(Long id) {
 		
 		if(id == null || id <= 0) {
 			throw new ValidationException("Id must be greater than 0");
 		}
 		
-		return paymentRepository.findById(id);
+		PaymentDetailsEntity payDetails = paymentRepository.findById(id).get();
+		return Optional.of(paymentDetailsModelMapper.convertToDto(payDetails));
 	}
 	
 	public List<PaymentDetailsEntity> getAllPaymentDetails() {
@@ -53,7 +57,7 @@ public class PaymentDetailsService {
 		return paymentRepository.getPaymentDetailsByPaymentMethod(paymentMethod);
 	}
 	
-	public PaymentDetailsEntity saveDetails(PaymentDetails payDetails) {
+	public PaymentDetails saveDetails(PaymentDetails payDetails) {
 		
 		if(payDetails.getStayDays() == null || payDetails.getStayDays() <= 0) {
 			throw new ValidationException("StayDays cannot be less than 0");
@@ -66,6 +70,7 @@ public class PaymentDetailsService {
 		
 		PaymentDetailsEntity savedPayment = paymentRepository.save(entity);
 		logger.info("payment deatils saved successfully");
+		
 		CustomerDetailsEntity latestCustomer = customerRepository.findTopByOrderByIdDesc()
                 .orElseThrow(() -> new RuntimeException("No customer found"));
 		logger.info("Fetched Last Customer to the application");
@@ -82,10 +87,10 @@ public class PaymentDetailsService {
 
         customerLogRepository.save(logsEntity);
         logger.info("saved customer's details into Customerlogs");
-        return savedPayment;
+        return paymentDetailsModelMapper.convertToDto(savedPayment);
 	}
 	
-	public PaymentDetailsEntity updateDetails(Long id, PaymentDetails payDetails) {
+	public PaymentDetails updateDetails(Long id, PaymentDetails payDetails) {
 		
 		PaymentDetailsEntity existingEntity = paymentRepository.findById(id)
 				.orElseThrow(() -> new RuntimeException("Payment details not found with id"+id));
@@ -93,7 +98,8 @@ public class PaymentDetailsService {
 		existingEntity.setStayDays(payDetails.getStayDays());
 		existingEntity.setTotalPrice(payDetails.getTotalPrice());
 		
-		return paymentRepository.save(existingEntity);
+		PaymentDetailsEntity updatePayment = paymentRepository.save(existingEntity);
+		return paymentDetailsModelMapper.convertToDto(updatePayment);
 	}
 	
 	public void deleteByPayment(Long id) {

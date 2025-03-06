@@ -104,12 +104,18 @@
     		<scope>runtime</scope>
     	<!-- logging to add the logs for every method --> 
 		</dependency>
-		    <dependency>
+		<!-- https://mvnrepository.com/artifact/com.twilio.sdk/twilio -->
+<dependency>
+    <groupId>com.twilio.sdk</groupId>
+    <artifactId>twilio</artifactId>
+    <version>9.0.0</version>
+</dependency>
+
+		 <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-logging</artifactId>
         </dependency>
-    </dependencies>
-       
+</dependencies>  
     <build>
         <plugins>
             <plugin>

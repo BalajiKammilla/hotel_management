@@ -16,6 +16,7 @@ import com.example.hotel_management_project.entity.CustomerDetailsEntity;
 import com.example.hotel_management_project.enums.MaritalStatus;
 import com.example.hotel_management_project.exception.UserNotFoundException;
 import com.example.hotel_management_project.exception.ValidationException;
+import com.example.hotel_management_project.mapper.CustomerDetailsModelMapper;
 import com.example.hotel_management_project.repositoryPl.CustomerRepository;
 import com.example.hotel_management_project.securityConfig.JWTService;
 //import com.google.i18n.phonenumbers.PhoneNumberUtil;
@@ -37,24 +38,29 @@ public class CustomerDetailsService {
 	@Autowired
 	private AuthenticationManager authManager;
 	
+	@Autowired
+	private CustomerDetailsModelMapper customerDetailsModelMapper;
+	
 	private Map<String, String> otpStore = new HashMap<String, String>();
 	
 	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 	
 	
-	 public Optional<CustomerDetailsEntity> getCustomerDetailsById(Long id) {
+	 public Optional<CustomerDetails> getCustomerDetailsById(Long id) {
 		if(id == null || id <= 0) {
 			throw new ValidationException("Invalid Id, ID must be positive number");
 		}
-		return customerRepository.findById(id);
+		CustomerDetailsEntity entity =  customerRepository.findById(id).get();
+		return Optional.of(customerDetailsModelMapper.convertToDto(entity));
 	}
 	 
 	  
-	 public Optional<CustomerDetailsEntity> getByCustomerID(String customerID){
+	 public Optional<CustomerDetails> getByCustomerID(String customerID){
 		 if(customerID == null || customerID.isEmpty()) {
 			 throw new RuntimeException("Invalid customerID please re-enter correct customerID");
 		 }
-		 return customerRepository.findByCustomerID(customerID);
+		 CustomerDetailsEntity getId = customerRepository.findByCustomerID(customerID).get();
+		 return Optional.of(customerDetailsModelMapper.convertToDto(getId));
 	 }
 	
 	 
@@ -73,7 +79,7 @@ public class CustomerDetailsService {
 	}
 	
 	
-	public CustomerDetailsEntity saveDetails(CustomerDetails customerDetails) {
+	public CustomerDetails saveDetails(CustomerDetails customerDetails) {
 		
 		CustomerDetailsValidations(customerDetails);
 //		PhoneNumberValidation(customerDetails);
@@ -91,7 +97,8 @@ public class CustomerDetailsService {
         logger.info("ENCODE: password in encoded successfully");
         entity.setMaritalStatus(customerDetails.getMaritalStatus() != null ? customerDetails.getMaritalStatus() : MaritalStatus.NOTDEFINED);
         
-        return customerRepository.save(entity);
+        CustomerDetailsEntity savedDeatils = customerRepository.save(entity);
+        return customerDetailsModelMapper.convertToDto(savedDeatils);
     }
 
 	
@@ -134,7 +141,8 @@ public class CustomerDetailsService {
 			throw new ValidationException("IdProof cannot be null or empty");
 		}
 		logger.info("customer identity is validated !");
-		if(customerDetails.getMobileNumber().equals("+91") && customerDetails.getMobileNumber() == null || !customerDetails.getMobileNumber().matches("\\d{10}")) {
+//		|| !customerDetails.getMobileNumber().matches("\\d{10,15}")
+		if(customerDetails.getMobileNumber().equals("+91") && customerDetails.getMobileNumber() == null ) {
 			throw new ValidationException("Invalid MobileNumber, Indian mobileNumbers should conatain 10 digits");
 		}
 		if(customerRepository.existsByMobileNumber(customerDetails.getMobileNumber())) {
@@ -145,7 +153,7 @@ public class CustomerDetailsService {
 	}
 	
 	
-	public CustomerDetailsEntity updateDetails(String customerId, CustomerDetails custDetails) {
+	public CustomerDetails updateDetails(String customerId, CustomerDetails custDetails) {
 		
 	      CustomerDetailsEntity existingEntity = customerRepository.findByCustomerID(customerId)
 	              .orElseThrow(() -> new RuntimeException("Customer not found with CustomerID: " + customerId));
@@ -158,7 +166,8 @@ public class CustomerDetailsService {
 	      existingEntity.setMobileNumber(custDetails.getMobileNumber());
 	      
 	      logger.info("INFO:Customer details are updated by customerID");
-	      return customerRepository.save(existingEntity);
+	      CustomerDetailsEntity updatedDeatils = customerRepository.save(existingEntity);
+	      return customerDetailsModelMapper.convertToDto(updatedDeatils);
 	}
 	
 	
@@ -179,45 +188,6 @@ public class CustomerDetailsService {
 		logger.error("ERROR:customer details are invalid");
 		return "failed verification";
 	}
-	
-//	<!--To Generate and verify Otp to change password in case of forget password -->
-	
-	/*public String generateOtp() {
-		Random random = new Random();
-		int otp = 100000 + random.nextInt(90000);
-		return String.valueOf(otp);
-	}
-	
-	public String sendOtp(String mobileNumber) {
-		Optional<CustomerDetailsEntity> customer = customerRepository.findByMobileNumber(mobileNumber);
-		if(customer.isEmpty()) {
-			throw new RuntimeException("Mobile Number Not Found");
-		}
-		
-		String otp = generateOtp();
-		otpStore.put(mobileNumber, otp);
-		System.out.println("OTP sent to "+ mobileNumber +":"+ otp);
-		return "OTP sent Successfully";
-	}
-	
-	
-	public String resetPassword(String mobileNumber, String otp, String newPassword) {
-	
-		if(!otpStore.containsKey(mobileNumber) || !otpStore.get(mobileNumber).equals(otp)) {
-			throw new RuntimeException("Invalid OTP !");
-		}
-		
-		CustomerDetailsEntity customer = customerRepository.findByMobileNumber(mobileNumber)
-				.orElseThrow(() -> new RuntimeException("Mobile Number Not Found"));
-		
-		customer.setPassword(encoder.encode(newPassword));
-		customerRepository.save(customer);
-		
-		otpStore.remove(mobileNumber);
-		
-		return "Password reset Successfully !";
-	}*/
-	
 	
 	private String generateRegistrationID(String customerName) {
 		if(customerName == null || customerName.trim().isEmpty()) {
@@ -246,6 +216,19 @@ public class CustomerDetailsService {
 		return prefix + sequenceNumber;
 	}
 
+	public boolean updatePassword(String mobileNumber, String newPassword) {
+		Optional<CustomerDetailsEntity> details = customerRepository.findByMobileNumber(mobileNumber);
+		if(details.isPresent()) {
+			CustomerDetailsEntity custDetails = details.get();
+			
+			custDetails.setPassword(encoder.encode(newPassword));
+			customerRepository.save(custDetails);
+			logger.info("Password is updated with newPassword");
+			return true;
+		}
+		logger.info("Password is not updated");
+		return false;
+	}
 
 	public Map<String, String> getOtpStore() {
 		return otpStore;

@@ -32,6 +32,7 @@ public class SecurityConfig {
                 authorizeHttpRequests(request -> request
                 		.requestMatchers("/customer/register","/customer/login")
                 		.permitAll()
+                		.requestMatchers("/customer/send-otp", "/customer/verify-otp").permitAll()
                 		.anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

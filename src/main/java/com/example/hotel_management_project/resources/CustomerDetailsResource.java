@@ -1,6 +1,7 @@
 package com.example.hotel_management_project.resources;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.hotel_management_project.dto.CustomerDetails;
+import com.example.hotel_management_project.dto.OtpRequest;
 import com.example.hotel_management_project.entity.CustomerDetailsEntity;
 import com.example.hotel_management_project.service.CustomerDetailsService;
+import com.example.hotel_management_project.service.OtpService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -32,6 +35,9 @@ public class CustomerDetailsResource {
 	
 	@Autowired
 	private CustomerDetailsService customerDetailsService;
+	
+	@Autowired
+	private OtpService otpService;
 	
 
 	@GetMapping("/check")
@@ -51,7 +57,7 @@ public class CustomerDetailsResource {
             @ApiResponse(responseCode = "500", description = "Internal server error")
         })
 	@GetMapping("/details/{id}")
-	public Optional<CustomerDetailsEntity> findDetailsById(@PathVariable Long id) {
+	public Optional<CustomerDetails> findDetailsById(@PathVariable Long id) {
     	logger.info("INFO:customer details by id are fectched successfully");
 		return customerDetailsService.getCustomerDetailsById(id);
 	}
@@ -60,7 +66,7 @@ public class CustomerDetailsResource {
     		summary = "Retreives the customer details with CustomerID ",
     		description = "Fetches the the cutomer details using unique reference customerID if found")
     @GetMapping("/detail/{customerID}")
-    public Optional<CustomerDetailsEntity> getDetailsByCustomerID(@PathVariable String customerID){
+    public Optional<CustomerDetails> getDetailsByCustomerID(@PathVariable String customerID){
     	 logger.info("INFO:customer details by cutomer id are fetched successfully");
     	return customerDetailsService.getByCustomerID(customerID);
     }
@@ -105,8 +111,8 @@ public class CustomerDetailsResource {
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
 	@PostMapping("/register")
-	public ResponseEntity<CustomerDetailsEntity> register(@RequestBody CustomerDetails details) {
-	    CustomerDetailsEntity savedEntity = customerDetailsService.saveDetails(details);
+	public ResponseEntity<CustomerDetails> register(@RequestBody CustomerDetails details) {
+	    CustomerDetails savedEntity = customerDetailsService.saveDetails(details);
 	    logger.info("INFO:customer details are saved successfully");
 	    return ResponseEntity.status(200).body(savedEntity); 
 	}
@@ -137,8 +143,8 @@ public class CustomerDetailsResource {
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })  
 	@PutMapping("/update/{customerid}")
-	public ResponseEntity<CustomerDetailsEntity> upadteDetails(@PathVariable String customerID, @RequestBody CustomerDetails details){
-		CustomerDetailsEntity updatedEntity = customerDetailsService.updateDetails(customerID, details);
+	public ResponseEntity<CustomerDetails> upadteDetails(@PathVariable String customerID, @RequestBody CustomerDetails details){
+		CustomerDetails updatedEntity = customerDetailsService.updateDetails(customerID, details);
 		logger.info("INFO:successfully updated customer details");
 		return ResponseEntity.ok(updatedEntity);
 	}
@@ -160,19 +166,36 @@ public class CustomerDetailsResource {
 		return ResponseEntity.noContent().build();
 	}
 	
-//	@PostMapping("/send-otp")
-//	public ResponseEntity<String> sendOtp(@PathParam(value = "mobileNUmber") String mobileNumber){
-//		String response = customerDetailsService.sendOtp(mobileNumber);
-//		return ResponseEntity.ok(response);
-//	}
-//	
-//	@PostMapping("/resetPassword")
-//    public ResponseEntity<String> resetPassword(
-//            @RequestParam String mobileNumber,
-//            @RequestParam String otp,
-//            @RequestParam String newPassword) {
-//        String response = customerDetailsService.resetPassword(mobileNumber, otp, newPassword);
-//        return ResponseEntity.ok(response);
-//	}
+    @Operation(
+    		summary = "Send Otp to Registered mobile Number",
+    		description = "Send Otp to Registered Mobile Number")
+    @PostMapping("/send-otp")
+    public String sendOtp(@RequestBody Map<String, String> request) {
+    	String mobileNumber = request.get("mobileNumber");
+    	 System.out.println("DEBUG: Received mobile number - '" + mobileNumber + "'");
+    	 if (mobileNumber == null || !mobileNumber.trim().matches("^\\+\\d{10,15}$")) {
+             return "Invalid phone number format. Ensure it's in E.164 format.";
+         }
+    	return otpService.sendOtp(mobileNumber);
+    }
     
+    @Operation(
+    		summary = "Verify Otp with Registered mobile Number and Reset Password",
+    		description = "Verify Otp with Registered Mobile Number and Reset Password")
+    @PostMapping("/verify-otp")
+    public String verifyOtp(@RequestBody OtpRequest otpRequest) {
+    	boolean isOtpValid = otpService.verifyOtp(otpRequest.getMobileNumber(), otpRequest.getOtp());
+
+        if (!isOtpValid) {
+            logger.warn("Invalid OTP attempt for {}", otpRequest.getMobileNumber());
+            return "Invalid OTP!";
+        }
+
+        boolean updated = customerDetailsService.updatePassword(
+            otpRequest.getMobileNumber(),
+            otpRequest.getNewPassword()
+        );
+
+        return updated ? "Password updated successfully!" : "User not found!";
+    }
 }
