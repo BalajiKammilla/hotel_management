@@ -102,15 +102,14 @@
     		<artifactId>jjwt-jackson</artifactId>
     		<version>0.12.3</version>
     		<scope>runtime</scope>
-    	<!-- logging to add the logs for every method --> 
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.twilio.sdk/twilio -->
-<dependency>
-    <groupId>com.twilio.sdk</groupId>
-    <artifactId>twilio</artifactId>
-    <version>9.0.0</version>
-</dependency>
-
+		<!-- twilio to send/receive messages -->
+		<dependency>
+    		<groupId>com.twilio.sdk</groupId>
+    		<artifactId>twilio</artifactId>
+    		<version>9.0.0</version>
+		</dependency>
+		<!-- logging to add the logs for every method --> 
 		 <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-logging</artifactId>
