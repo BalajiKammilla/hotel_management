@@ -170,13 +170,18 @@ public class CustomerDetailsResource {
     		summary = "Send Otp to Registered mobile Number",
     		description = "Send Otp to Registered Mobile Number")
     @PostMapping("/send-otp")
-    public String sendOtp(@RequestBody Map<String, String> request) {
+    public ResponseEntity<String> sendOtp(@RequestBody Map<String, String> request) {
     	String mobileNumber = request.get("mobileNumber");
+    	String customerID = request.get("customerID");
     	 System.out.println("DEBUG: Received mobile number - '" + mobileNumber + "'");
     	 if (mobileNumber == null || !mobileNumber.trim().matches("^\\+\\d{10,15}$")) {
-             return "Invalid phone number format. Ensure it's in E.164 format.";
-         }
-    	return otpService.sendOtp(mobileNumber);
+    		 return ResponseEntity.badRequest().body("Invalid phone number format. Ensure it's in E.164 format.");
+         } 
+    	 if (customerID == null || customerID.trim().isEmpty()) {
+    		 return ResponseEntity.badRequest().body("Customer ID is required.");
+    	    }
+    	String response = otpService.sendOtp(mobileNumber,customerID);
+    	return ResponseEntity.ok(response);
     }
     
     @Operation(
