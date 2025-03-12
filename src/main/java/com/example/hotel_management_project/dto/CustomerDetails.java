@@ -1,5 +1,7 @@
 package com.example.hotel_management_project.dto;
 
+import java.util.Set;
+
 import com.example.hotel_management_project.enums.MaritalStatus;
 
 public class CustomerDetails {
@@ -13,6 +15,7 @@ public class CustomerDetails {
 	private String countryCode;
 	private String address;
 	private String idProof;
+	private Set<String> roles;
 	private MaritalStatus maritalStatus = MaritalStatus.NOTDEFINED;
 	
 	
@@ -77,12 +80,12 @@ public class CustomerDetails {
 	}
 	public void setCountryCode(String countryCode) {
 		this.countryCode = countryCode;
+	}	
+	public Set<String> getRoles() {
+		return roles;
 	}
-	
-	@Override
-	public String toString() {
-		return "CustomerDetails [id=" + id + ", customerID=" + customerID + ", customerName=" + customerName + ", age="
-				+ age + ", mobileNumber=" + mobileNumber + ", password=" + password + ", countryCode=" + countryCode
-				+ ", address=" + address + ", idProof=" + idProof + ", maritalStatus=" + maritalStatus + "]";
+	public void setRoles(Set<String> roles) {
+		this.roles = roles;
 	}
+
 }
