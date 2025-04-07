@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS customer_logs;
-DROP TABLE IF EXISTS customer_details;
+DROP TABLE IF EXISTS customer_logs CASCADE;
+DROP TABLE IF EXISTS customer_details CASCADE;
 DROP TABLE IF EXISTS room_details;
 DROP TABLE IF EXISTS payment_details;
 
@@ -13,6 +13,7 @@ CREATE TABLE customer_details (
     countryCode VARCHAR(5) NOT NULL,
     address VARCHAR(255) NOT NULL,
     idProof VARCHAR(50) NOT NULL,
+    roles VARCHAR(20),
     maritalStatus VARCHAR(20)
 );
 
@@ -42,9 +43,9 @@ CREATE TABLE customer_logs (
     payment_id INT REFERENCES payment_details(id)
 );
 
-INSERT INTO customer_details (customerName,customerID, age, mobileNumber, password, countryCode, address, idProof, maritalStatus)
-VALUES ('John Doe','25J001', 30, '1234567890', '$2a$12$dS2C9SD1jAzVLQNABmefpeGgVvLEt3BBjGTjCWplakL/UwsS3y.2.', 'IN', '123 Main St, City', 'Aadhar123', 'MARRIED'),
-('Admin','25J002', 30, '8096602533',  '$2a$12$rLk/mhDggXcja21FLKU1R.L3JrcjafyEMlMX35sAbXt75jhUX3KZa', '+91', 'Hyderabad', 'PAN', 'MARRIED');
+INSERT INTO customer_details (customerName,customerID, age, mobileNumber, password, countryCode, address, idProof,  roles, maritalStatus)
+VALUES ('John Doe','25J001', 30, '1234567890', '$2a$12$dS2C9SD1jAzVLQNABmefpeGgVvLEt3BBjGTjCWplakL/UwsS3y.2.', 'IN', '123 Main St, City', 'Aadhar123','USER', 'MARRIED'),
+('Admin','25J002', 30, '8096602533',  '$2a$12$rLk/mhDggXcja21FLKU1R.L3JrcjafyEMlMX35sAbXt75jhUX3KZa', '+91', 'Hyderabad', 'PAN','ADMIN,USER', 'MARRIED');
 
 INSERT INTO room_details (roomNo, roomType, roomStatus, price, checkInType, idProofType, checkoutTime)
 VALUES
